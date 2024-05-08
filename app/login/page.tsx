@@ -40,7 +40,7 @@ const Login = () => {
     <Box className="relative">
       <Link
         href="/"
-        className="absolute top-10 left-10 flex items-center text-lg hover:text-blue-600 p-2"
+        className="absolute top-10 left-10 flex items-center text-lg hover:text-blue-700 p-2"
       >
         <ArrowBack /> back
       </Link>
