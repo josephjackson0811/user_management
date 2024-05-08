@@ -29,6 +29,9 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { Check, Delete, Edit } from "@mui/icons-material";
+import jwt from "jsonwebtoken";
+
+import { config } from "@/config";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -126,10 +129,6 @@ export default function CustomPaginationActionsTable() {
   const [open, setOpen] = useState(false);
   const [deletedUser, setDeletedUser] = useState(0);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -153,8 +152,13 @@ export default function CustomPaginationActionsTable() {
   };
 
   const editUser = (row_id: any, row_name: any, index: number) => {
-    setIsEdit(!isEdit);
+    const access = window.localStorage.getItem("accessToken") || "";
+    const refresh = window.localStorage.getItem("refreshToken") || "";
+
+    const decoded: any = jwt.decode(refresh);
+
     if (!isEdit) {
+      setIsEdit(true);
       setName(row_name);
       setId(row_id);
     } else {
@@ -162,41 +166,91 @@ export default function CustomPaginationActionsTable() {
         _id: rows[index]._id,
         id: id,
         name: name,
+        access: access,
+        refresh: refresh,
       };
 
-      axios.put("/api/users/update", userData).then((data) => {
+      console.log(decoded);
+
+      if (access === decoded.accessToken) {
+        const decodedAccess: any = jwt.decode(access);
+
+        if (
+          decodedAccess.id === userData.id &&
+          decodedAccess.name === userData.name
+        ) {
+          console.log("sdfsdf");
+          setIsEdit(false);
+        } else {
+          axios.put("/api/users/update", userData).then((data) => {
+            const info = data.data;
+
+            if (info.success) {
+              window.localStorage.setItem("accessToken", info.data.accessToken);
+              window.localStorage.setItem(
+                "refreshToken",
+                info.data.refreshToken
+              );
+
+              rows[index].name = name;
+              rows[index].id = id;
+              setName("");
+              setId("");
+              setIsEdit(false);
+            } else {
+              alert(info.message);
+            }
+          });
+        }
+      }
+    }
+  };
+
+  const deleteUser = () => {
+    const access = window.localStorage.getItem("accessToken") || "";
+    const refresh = window.localStorage.getItem("refreshToken") || "";
+
+    const decoded: any = jwt.decode(refresh);
+    if (access === decoded.accessToken) {
+      const decodedAccess: any = jwt.decode(access);
+
+      axios.delete(`api/users/delete/${rows[deletedUser]._id}`).then((data) => {
         const info = data.data;
 
         if (info.success) {
-          rows[index].name = name;
-          rows[index].id = id;
-          setName("");
-          setId("");
-        } else {
-          alert("Please Try Again");
+          if (decodedAccess.id === rows[deletedUser].id) {
+            window.localStorage.removeItem("accessToken");
+            window.localStorage.removeItem("refreshToken");
+            alert("");
+            window.location.href = "/";
+          } else {
+            console.log(deletedUser);
+            rows.splice(deletedUser, 1);
+            setOpen(false);
+            setDeletedUser(0);
+          }
         }
       });
     }
   };
 
-  const deleteUser = () => {
-    axios.delete(`api/users/delete/${rows[deletedUser]._id}`).then((data) => {
-      const info = data.data;
-
-      if (info.success) {
-        rows.splice(deletedUser);
-        setOpen(false);
-        setDeletedUser(0);
-      }
-    });
-  };
-
   useEffect(() => {
-    axios.get("/api/users/getuserlist").then((data) => {
-      const info = data.data.data;
+    const access = window.localStorage.getItem("accessToken") || "";
+    const refresh = window.localStorage.getItem("refreshToken") || "";
 
-      setRows(info);
-    });
+    const decoded: any = jwt.decode(refresh) || { accessToken: "" };
+
+    if (access && access === decoded.accessToken) {
+      axios.get("/api/users/getuserlist").then((data) => {
+        const info = data.data.data;
+
+        setRows(info);
+      });
+    } else {
+      window.localStorage.removeItem("accessToken");
+      window.localStorage.removeItem("refreshToken");
+      window.location.href = "/";
+    }
   }, []);
 
   return (

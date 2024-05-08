@@ -28,9 +28,9 @@ const Register = () => {
           if (!data.data.success) {
             alert(data.data.message);
           } else {
-            const info = data.data.data;
+            const info = data.data;
 
-            alert(info.name);
+            window.location.href = "/login";
           }
         })
         .catch((err) => {
