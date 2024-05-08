@@ -28,10 +28,11 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import { Check, Delete, Edit } from "@mui/icons-material";
+import { ArrowBack, Check, Delete, Edit } from "@mui/icons-material";
 import jwt from "jsonwebtoken";
 
 import { config } from "@/config";
+import Link from "next/link";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -254,10 +255,24 @@ export default function CustomPaginationActionsTable() {
   }, []);
 
   return (
-    <Box>
-      <Container>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+    <Box className="relative">
+      <Link
+        href="/"
+        className="absolute top-10 left-10 flex items-center text-lg hover:text-blue-700 p-2"
+      >
+        <ArrowBack /> back
+      </Link>
+      <Container className="flex flex-col justify-around items-center pt-24">
+        <p className=" text-8xl mb-20">User List</p>
+        <TableContainer
+          component={Paper}
+          sx={{ maxHeight: "50vh", overflowY: "scroll" }}
+        >
+          <Table
+            stickyHeader
+            sx={{ minWidth: 500 }}
+            aria-label="sticky custom pagination table"
+          >
             <TableHead>
               <TableRow>
                 <TableCell>User Name</TableCell>
@@ -331,30 +346,27 @@ export default function CustomPaginationActionsTable() {
                 </TableRow>
               )}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={3}
-                  count={rows.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  slotProps={{
-                    select: {
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                      native: true,
-                    },
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                />
-              </TableRow>
-            </TableFooter>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+          colSpan={3}
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          slotProps={{
+            select: {
+              inputProps: {
+                "aria-label": "rows per page",
+              },
+              native: true,
+            },
+          }}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          ActionsComponent={TablePaginationActions}
+          className="w-full"
+        />
       </Container>
       {open && (
         <Fragment>
