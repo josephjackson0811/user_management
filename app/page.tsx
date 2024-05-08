@@ -11,9 +11,9 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <Container className="text-center py-96">
+      <Container className="text-center pt-80 pb-[500px]">
         <Box>
-          <p className=" text-9xl">Mountain</p>
+          <p className=" text-9xl mb-20">Welcome</p>
           <Box>
             <button className=" border-blue-500 px-5 py-3 bg-blue-500 rounded-md hover:bg-blue-700 transition-all mr-40">
               <Link href="/login" className="text-xl font-bold text-white">
