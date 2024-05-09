@@ -140,6 +140,10 @@ export default function CustomPaginationActionsTable() {
     });
   }, []);
 
+  useEffect(() => {
+    console.log(foodIndex);
+  });
+
   const createFood = () => {
     const access = window.localStorage.getItem('accessToken') || '';
     const refresh = window.localStorage.getItem('refreshToken') || '';
@@ -183,11 +187,13 @@ export default function CustomPaginationActionsTable() {
   };
 
   const editFood = (id: any, index: any) => {
+    const realIndex = index + page * rowsPerPage;
+
     setFoodId(id);
-    setFoodIndex(index);
+    setFoodIndex(realIndex);
     setOpen(true);
     setIsEdit(true);
-    setFood(rows[index].food);
+    setFood(rows[realIndex].food);
   };
 
   const deleteFood = () => {
@@ -256,7 +262,7 @@ export default function CustomPaginationActionsTable() {
                         onClick={() => {
                           setOpen(true);
                           setFoodId(row._id);
-                          setFoodIndex(index);
+                          setFoodIndex(index + page * rowsPerPage);
                           setIsDelete(true);
                         }}
                       >
