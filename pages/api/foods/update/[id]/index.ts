@@ -2,10 +2,7 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectToDataBase from '@/libs/db';
-import User from '@/models/userSchema';
 import Food from '@/models/foodSchema';
-import jwt from 'jsonwebtoken';
-import { config } from '@/config';
 
 connectToDataBase();
 

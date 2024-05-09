@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-import { config } from '@/config';
+const url = process.env.MONGO_URL;
 
 async function connectToDataBase() {
-  mongoose.connect(config.mongoURL).then(() => {
-    console.log('MongoDB connected!!!');
+  mongoose.connect(`${url}`).then(() => {
+    console.log('MongoDB Connected!!!');
   });
 }
 

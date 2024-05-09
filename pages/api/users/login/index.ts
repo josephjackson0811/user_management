@@ -6,8 +6,6 @@ import User from '@/models/userSchema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { config } from '@/config';
-
 connectToDataBase();
 
 type ResponseData = {
@@ -31,7 +29,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
       User.findOne({ id: info.id }).then((result) => {
         if (!result) {
-          res.json({ message: 'Email Does Not Exists.', success: false, data: {} });
+          res.json({ message: 'Email Does Not Exist.', success: false, data: {} });
         } else {
           bcrypt.compare(info.password, result.password, (err, bool) => {
             if (err) throw err;
@@ -41,10 +39,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
             } else {
               const accessToken = jwt.sign(
                 { id: info.id, name: result.name, password: info.password },
-                config.accessKey,
+                `${process.env.ACCESS_KEY}`,
                 { expiresIn: 3600 },
               );
-              const refreshToken = jwt.sign({ accessToken: accessToken }, config.refreshKey, { expiresIn: 3600 * 10 });
+              const refreshToken = jwt.sign({ accessToken: accessToken }, `${process.env.REFRESH_KEY}`, {
+                expiresIn: 3600 * 10,
+              });
               let data = {
                 data: result,
                 accessToken: accessToken,
