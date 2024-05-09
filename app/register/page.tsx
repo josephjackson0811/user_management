@@ -47,50 +47,52 @@ const Register = () => {
       >
         <ArrowBack /> back
       </Link>
-      <Container className="flex flex-col justify-around items-center pt-24">
-        <p className=" text-8xl mb-32">Register</p>
-        <TextField
-          fullWidth
-          label="User Name"
-          onChange={(e) => setName(e.target.value)}
-          className="mb-16"
-        />
-        <TextField
-          fullWidth
-          label="User ID"
-          onChange={(e) => setId(e.target.value)}
-          className="mb-16"
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          className="mb-16"
-        />
-        <TextField
-          fullWidth
-          label="Password Confirm"
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-          type="password"
-          className="mb-16"
-        />
-        <button
-          className="border-blue-500 px-5 py-3 bg-blue-500 rounded-md hover:bg-blue-700 transition-all text-bold text-white text-xl mb-5"
-          onClick={() => userRegister()}
-        >
-          Submit
-        </button>
-        <p>
-          Do you have your account already? If so,&nbsp;
-          <Link
-            href="/login"
-            className="underline hover:text-gray-300 transition-all"
+      <Container className="px-96">
+        <Container className="flex flex-col justify-around items-center pt-24">
+          <p className=" text-8xl mb-32">Register</p>
+          <TextField
+            fullWidth
+            label="User Name"
+            onChange={(e) => setName(e.target.value)}
+            className="mb-16"
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            onChange={(e) => setId(e.target.value)}
+            className="mb-16"
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            className="mb-16"
+          />
+          <TextField
+            fullWidth
+            label="Password Confirm"
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            type="password"
+            className="mb-16"
+          />
+          <button
+            className="border-blue-500 px-5 py-3 bg-blue-500 rounded-md hover:bg-blue-700 transition-all text-bold text-white text-xl mb-5"
+            onClick={() => userRegister()}
           >
-            Click Here
-          </Link>{" "}
-          to register now
-        </p>
+            REGISTER
+          </button>
+          <p>
+            Do you have your account already? If so,&nbsp;
+            <Link
+              href="/login"
+              className="underline hover:text-gray-300 transition-all"
+            >
+              Click Here
+            </Link>{" "}
+            to login now
+          </p>
+        </Container>
       </Container>
     </Box>
   );

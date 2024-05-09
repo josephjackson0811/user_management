@@ -24,7 +24,7 @@ export default function handler(
   switch(req.method) {
     case "POST" :
         if(info.id === "") {
-            res.json({ message: 'User ID Field is Required.', success: false, data: {} })
+            res.json({ message: 'Email Field is Required.', success: false, data: {} })
         }
 
         if(info.name === "") {
@@ -38,7 +38,7 @@ export default function handler(
         User.findOne({id: info.id})
             .then((result) => {
                 if(result) {
-                  res.json({ message: 'User ID Already Exists.', success: false, data: {} })
+                  res.json({ message: 'Email Already Exists.', success: false, data: {} })
                 } else {
                   bcrypt.hash(info.password, saltRound, (err, password) => {
                     if(err) throw err;

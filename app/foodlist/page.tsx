@@ -1,12 +1,12 @@
 "use client";
 
+import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
@@ -16,6 +16,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { Fragment, useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Button,
   Container,
@@ -27,12 +28,9 @@ import {
   TableHead,
   TextField,
 } from "@mui/material";
-import axios from "axios";
-import { ArrowBack, Check, Delete, Edit } from "@mui/icons-material";
+import { Add, ArrowBack, Delete, Edit } from "@mui/icons-material";
 import jwt from "jsonwebtoken";
-
-import { config } from "@/config";
-import Link from "next/link";
+import axios from "axios";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -42,12 +40,6 @@ interface TablePaginationActionsProps {
     event: React.MouseEvent<HTMLButtonElement>,
     newPage: number
   ) => void;
-}
-
-interface UserData {
-  _id: string;
-  id: string;
-  name: string;
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
@@ -121,18 +113,24 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 export default function CustomPaginationActionsTable() {
-  const [rows, setRows] = useState<UserData[]>([]);
+  const [rows, setRows] = useState<any[]>([]);
   const [page, setPage] = useState(0);
-  const [isEdit, setIsEdit] = useState(false);
-  const [editIndex, setEditIndex] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [name, setName] = useState("");
-  const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
-  const [deletedUser, setDeletedUser] = useState(0);
+  const [food, setFood] = useState("");
+  const [isCreate, setIsCreate] = useState(false);
+  const [foodId, setFoodId] = useState("");
+  const [foodIndex, setFoodIndex] = useState(0);
+  const [isDelete, setIsDelete] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
+    setFood("");
+    setFoodId("");
+    setFoodIndex(0);
+    setIsDelete(false);
+    setIsEdit(false);
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -153,108 +151,78 @@ export default function CustomPaginationActionsTable() {
     setPage(0);
   };
 
-  const editUser = (row_id: any, row_name: any, index: number) => {
+  useEffect(() => {
+    axios.get("/api/foods/getfoodlist").then((data) => {
+      const info = data.data;
+      console.log(info);
+
+      setRows(info.data);
+    });
+  }, []);
+
+  const createFood = () => {
     const access = window.localStorage.getItem("accessToken") || "";
     const refresh = window.localStorage.getItem("refreshToken") || "";
 
     const decoded: any = jwt.decode(refresh);
 
-    if (!isEdit) {
-      setEditIndex(index);
-      setIsEdit(true);
-      setName(row_name);
-      setId(row_id);
-    } else {
-      const userData = {
-        _id: rows[index]._id,
-        id: id,
-        name: name,
-        access: access,
-        refresh: refresh,
+    if (decoded.accessToken === access) {
+      const decodedAccess: any = jwt.decode(access);
+
+      const foodData = {
+        food: food,
+        creator: decodedAccess.id,
       };
+      if (isCreate) {
+        axios.post("/api/foods/create", foodData).then((data) => {
+          const info = data.data;
 
-      console.log(decoded);
+          if (info.success) {
+            setRows(info.data);
+            setOpen(false);
+            setFood("");
+            setIsCreate(false);
+          } else {
+            alert(info.message);
+          }
+        });
+      } else {
+        axios.put(`/api/foods/update/${foodId}`, foodData).then((data) => {
+          const info = data.data;
 
-      if (access === decoded.accessToken) {
-        const decodedAccess: any = jwt.decode(access);
-
-        if (
-          decodedAccess.id === userData.id &&
-          decodedAccess.name === userData.name
-        ) {
-          console.log("sdfsdf");
-          setIsEdit(false);
-        } else {
-          axios.put("/api/users/update", userData).then((data) => {
-            const info = data.data;
-
-            if (info.success) {
-              window.localStorage.setItem("accessToken", info.data.accessToken);
-              window.localStorage.setItem(
-                "refreshToken",
-                info.data.refreshToken
-              );
-
-              rows[index].name = name;
-              rows[index].id = id;
-              setName("");
-              setId("");
-              setIsEdit(false);
-            } else {
-              alert(info.message);
-            }
-          });
-        }
+          if (info.success) {
+            rows[foodIndex].food = info.data;
+            setFoodIndex(0);
+            setFoodId("");
+            setOpen(false);
+            setIsEdit(false);
+          }
+        });
       }
     }
   };
 
-  const deleteUser = () => {
-    const access = window.localStorage.getItem("accessToken") || "";
-    const refresh = window.localStorage.getItem("refreshToken") || "";
-
-    const decoded: any = jwt.decode(refresh);
-    if (access === decoded.accessToken) {
-      const decodedAccess: any = jwt.decode(access);
-
-      axios.delete(`api/users/delete/${rows[deletedUser]._id}`).then((data) => {
-        const info = data.data;
-
-        if (info.success) {
-          if (decodedAccess.id === rows[deletedUser].id) {
-            window.localStorage.removeItem("accessToken");
-            window.localStorage.removeItem("refreshToken");
-            alert("");
-            window.location.href = "/";
-          } else {
-            console.log(deletedUser);
-            rows.splice(deletedUser, 1);
-            setOpen(false);
-            setDeletedUser(0);
-          }
-        }
-      });
-    }
+  const editFood = (id: any, index: any) => {
+    setFoodId(id);
+    setFoodIndex(index);
+    setOpen(true);
+    setIsEdit(true);
+    setFood(rows[index].food);
   };
 
-  useEffect(() => {
-    const access = window.localStorage.getItem("accessToken") || "";
-    const refresh = window.localStorage.getItem("refreshToken") || "";
+  const deleteFood = () => {
+    axios.delete(`/api/foods/delete/${foodId}`).then((data) => {
+      const info = data.data;
 
-    const decoded: any = jwt.decode(refresh) || { accessToken: "" };
-
-    if (access && access === decoded.accessToken) {
-      axios.get("/api/users/getuserlist").then((data) => {
-        const info = data.data.data;
-
-        setRows(info);
-      });
-    } else {
-      window.localStorage.removeItem("accessToken");
-      window.localStorage.removeItem("refreshToken");
-      window.location.href = "/";
-    }
-  }, []);
+      if (info.success) {
+        rows.splice(foodIndex, 1);
+        setOpen(false);
+        setFoodId("");
+        setFoodIndex(0);
+        setIsDelete(false);
+      }
+    });
+  };
 
   return (
     <Box className="relative">
@@ -264,8 +232,18 @@ export default function CustomPaginationActionsTable() {
       >
         <ArrowBack /> back
       </Link>
+      <Box
+        className="absolute top-10 right-10 flex items-center text-lg p-2 cursor-pointer bg-blue-600 text-white rounded-lg"
+        onClick={() => {
+          setOpen(true);
+          setIsCreate(true);
+        }}
+      >
+        <Add />
+        Create
+      </Box>
       <Container className="flex flex-col justify-around items-center pt-24">
-        <p className=" text-8xl mb-20">User List</p>
+        <p className=" text-8xl mb-20">Food List</p>
         <TableContainer
           component={Paper}
           sx={{ maxHeight: "50vh", overflowY: "scroll" }}
@@ -277,8 +255,8 @@ export default function CustomPaginationActionsTable() {
           >
             <TableHead>
               <TableRow>
-                <TableCell>User Name</TableCell>
-                <TableCell>User ID</TableCell>
+                <TableCell>Food</TableCell>
+                <TableCell>Creator</TableCell>
                 <TableCell align="center">Edit</TableCell>
               </TableRow>
             </TableHead>
@@ -290,43 +268,21 @@ export default function CustomPaginationActionsTable() {
                   )
                 : rows
               ).map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={row.index}>
                   <TableCell component="th" scope="row">
-                    {editIndex === index && isEdit ? (
-                      <TextField
-                        id="name"
-                        label="Edit User Name"
-                        defaultValue={row.name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    ) : (
-                      row.name
-                    )}
+                    {row.food}
                   </TableCell>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    style={{ width: "35%" }}
-                  >
-                    {editIndex === index && isEdit ? (
-                      <TextField
-                        id="id"
-                        label="Edit User ID"
-                        defaultValue={row.id}
-                        onChange={(e) => setId(e.target.value)}
-                      />
-                    ) : (
-                      row.id
-                    )}
+                  <TableCell style={{ width: "35%" }}>
+                    {row.creator.id}
                   </TableCell>
-                  {/* <TableCell>{row.id}</TableCell> */}
                   <TableCell style={{ width: 160 }} align="center">
                     <IconButton
                       aria-label="delete"
                       color="primary"
-                      onClick={() => editUser(row.id, row.name, index)}
+                      onClick={() => editFood(row._id, index)}
                     >
-                      {isEdit ? <Check /> : <Edit />}
+                      {/* {isEdit ? <Check /> : <Edit />} */}
+                      <Edit />
                     </IconButton>
                     &nbsp;&nbsp;
                     <IconButton
@@ -334,7 +290,9 @@ export default function CustomPaginationActionsTable() {
                       color="error"
                       onClick={() => {
                         setOpen(true);
-                        setDeletedUser(index);
+                        setFoodId(row._id);
+                        setFoodIndex(index);
+                        setIsDelete(true);
                       }}
                     >
                       <Delete />
@@ -368,10 +326,12 @@ export default function CustomPaginationActionsTable() {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           ActionsComponent={TablePaginationActions}
-          className="w-full"
+          sx={{
+            width: "100%",
+          }}
         />
       </Container>
-      {open && (
+      {open && isDelete && (
         <Fragment>
           <Dialog
             open={open}
@@ -382,7 +342,7 @@ export default function CustomPaginationActionsTable() {
             <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                If you want to delete this user, press AGREE. Or not, press
+                If you want to delete this food, press AGREE. Or not, press
                 DISAGREE.
               </DialogContentText>
             </DialogContent>
@@ -390,8 +350,39 @@ export default function CustomPaginationActionsTable() {
               <Button onClick={handleClose} color="primary">
                 Disagree
               </Button>
-              <Button onClick={deleteUser} color="error" autoFocus>
+              <Button onClick={deleteFood} color="error" autoFocus>
                 Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Fragment>
+      )}
+      {open && (isEdit || isCreate) && (
+        <Fragment>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {isEdit ? "Update Food" : "Create Food"}
+            </DialogTitle>
+            <DialogContent>
+              <TextField
+                fullWidth
+                label="Food Name"
+                className="mb-20 mt-5"
+                id="food"
+                type=""
+                defaultValue={food}
+                onChange={(e) => setFood(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={createFood} autoFocus>
+                OK
               </Button>
             </DialogActions>
           </Dialog>

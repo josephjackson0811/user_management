@@ -25,7 +25,7 @@ export default function handler(
   switch(req.method) {
     case "POST" :
         if(info.id === "") {
-            res.json({ message: 'User ID Field is Required.', success: false, data: {} })
+            res.json({ message: 'Email Field is Required.', success: false, data: {} })
         }
 
         if(info.password === "") {
@@ -35,7 +35,7 @@ export default function handler(
         User.findOne({id: info.id})
             .then((result) => {
                 if(!result) {
-                  res.json({ message: 'User ID Does Not Exists.', success: false, data: {} })
+                  res.json({ message: 'Email Does Not Exists.', success: false, data: {} })
                 } else {
                   bcrypt.compare(info.password, result.password, (err, bool) => {
                     if(err) throw err;
