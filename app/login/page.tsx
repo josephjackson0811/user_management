@@ -12,28 +12,32 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const userLogin = () => {
-    const userData = {
-      id: id.toString(),
-      password: password.toString(),
-    };
+    if (password.length < 6 || password.length > 30) {
+      alert("Password must contain between 6 ~ 30 charachters");
+    } else {
+      const userData = {
+        id: id.toString(),
+        password: password.toString(),
+      };
 
-    axios
-      .post("/api/users/login", userData)
-      .then((data) => {
-        if (!data.data.success) {
-          alert(data.data.message);
-        } else {
-          const userInfo = data.data.data;
+      axios
+        .post("/api/users/login", userData)
+        .then((data) => {
+          if (!data.data.success) {
+            alert(data.data.message);
+          } else {
+            const userInfo = data.data.data;
 
-          window.localStorage.setItem("accessToken", userInfo.accessToken);
-          window.localStorage.setItem("refreshToken", userInfo.refreshToken);
+            window.localStorage.setItem("accessToken", userInfo.accessToken);
+            window.localStorage.setItem("refreshToken", userInfo.refreshToken);
 
-          window.location.href = "/foodlist";
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+            window.location.href = "/foodlist";
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (

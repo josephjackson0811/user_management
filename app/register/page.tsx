@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowBack, BackHand } from "@mui/icons-material";
-import { Backdrop, Box, Container, TextField } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import { Box, Container, TextField } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -13,29 +13,33 @@ const Register = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const userRegister = () => {
-    if (password !== passwordConfirm) {
-      alert("Password Incoreect");
+    if (password.length < 6 || password.length > 30) {
+      alert("Password must contain between 6 ~ 30 charachters");
     } else {
-      const userData = {
-        id: id.toString(),
-        name: name.toString(),
-        password: password.toString(),
-      };
+      if (password !== passwordConfirm) {
+        alert("Password Incoreect");
+      } else {
+        const userData = {
+          id: id.toString(),
+          name: name.toString(),
+          password: password.toString(),
+        };
 
-      axios
-        .post("/api/users/register", userData)
-        .then((data) => {
-          if (!data.data.success) {
-            alert(data.data.message);
-          } else {
-            const info = data.data;
+        axios
+          .post("/api/users/register", userData)
+          .then((data) => {
+            if (!data.data.success) {
+              alert(data.data.message);
+            } else {
+              const info = data.data;
 
-            window.location.href = "/login";
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+              window.location.href = "/login";
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
