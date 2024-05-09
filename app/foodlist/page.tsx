@@ -136,13 +136,9 @@ export default function CustomPaginationActionsTable() {
       const info = data.data;
       console.log(info);
 
-      setRows(info.data);
+      setRows(info.data.reverse());
     });
   }, []);
-
-  useEffect(() => {
-    console.log(foodIndex);
-  });
 
   const createFood = () => {
     const access = window.localStorage.getItem('accessToken') || '';
@@ -162,7 +158,7 @@ export default function CustomPaginationActionsTable() {
           const info = data.data;
 
           if (info.success) {
-            setRows(info.data);
+            setRows(info.data.reverse());
             setOpen(false);
             setFood('');
             setIsCreate(false);
