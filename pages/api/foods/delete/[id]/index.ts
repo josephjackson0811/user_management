@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import type { NextApiRequest, NextApiResponse } from "next";
-import connectToDataBase from "@/libs/db";
-import Food from "@/models/foodSchema";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import connectToDataBase from '@/libs/db';
+import Food from '@/models/foodSchema';
 
 connectToDataBase();
 
@@ -12,16 +12,13 @@ type ResponseData = {
   data: object;
 };
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
+export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   switch (req.method) {
-    case "DELETE":
-        const id = req.query.id;
+    case 'DELETE':
+      const id = req.query.id;
 
-        Food.deleteOne({_id: id}).then(() => (
-            res.json({ message: "Delete Food Successfully.", success: true, data: {} })
-        ))
+      Food.deleteOne({ _id: id }).then(() =>
+        res.json({ message: 'Delete Food Successfully.', success: true, data: {} }),
+      );
   }
 }

@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { ArrowBack } from "@mui/icons-material";
-import { Box, Container, TextField } from "@mui/material";
-import axios from "axios";
-import Link from "next/link";
-import React, { useState } from "react";
+import { ArrowBack } from '@mui/icons-material';
+import { Box, Container, TextField } from '@mui/material';
+import axios from 'axios';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 const Login = () => {
   //State
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
 
   const userLogin = () => {
     if (password.length < 6 || password.length > 30) {
-      alert("Password must contain between 6 ~ 30 charachters");
+      alert('Password must contain between 6 ~ 30 charachters');
     } else {
       const userData = {
         id: id.toString(),
@@ -21,17 +21,17 @@ const Login = () => {
       };
 
       axios
-        .post("/api/users/login", userData)
+        .post('/api/users/login', userData)
         .then((data) => {
           if (!data.data.success) {
             alert(data.data.message);
           } else {
             const userInfo = data.data.data;
 
-            window.localStorage.setItem("accessToken", userInfo.accessToken);
-            window.localStorage.setItem("refreshToken", userInfo.refreshToken);
+            window.localStorage.setItem('accessToken', userInfo.accessToken);
+            window.localStorage.setItem('refreshToken', userInfo.refreshToken);
 
-            window.location.href = "/foodlist";
+            window.location.href = '/foodlist';
           }
         })
         .catch((err) => {
@@ -42,22 +42,13 @@ const Login = () => {
 
   return (
     <Box className="relative">
-      <Link
-        href="/"
-        className="absolute top-10 left-10 flex items-center text-lg hover:text-blue-700 p-2"
-      >
+      <Link href="/" className="absolute top-10 left-10 flex items-center text-lg hover:text-blue-700 p-2">
         <ArrowBack /> back
       </Link>
       <Container className="px-96">
         <Container className="flex flex-col justify-around items-center pt-24">
           <p className=" text-8xl mb-40">Login</p>
-          <TextField
-            fullWidth
-            label="Email"
-            onChange={(e) => setId(e.target.value)}
-            className="mb-20"
-            type=""
-          />
+          <TextField fullWidth label="Email" onChange={(e) => setId(e.target.value)} className="mb-20" type="" />
           <TextField
             fullWidth
             label="Password"
@@ -73,12 +64,9 @@ const Login = () => {
           </button>
           <p>
             Do you have your account? If not,&nbsp;
-            <Link
-              href="/register"
-              className="underline hover:text-gray-300 transition-all"
-            >
+            <Link href="/register" className="underline hover:text-gray-300 transition-all">
               Click Here
-            </Link>{" "}
+            </Link>{' '}
             to register now
           </p>
         </Container>

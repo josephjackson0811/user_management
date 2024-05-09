@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Box, Container } from "@mui/material";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { Box, Container } from '@mui/material';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [loggedUser, setLoggedUser] = useState(true);
 
   useEffect(() => {
-    const access = window.localStorage.getItem("accessToken");
-    const refresh = window.localStorage.getItem("refreshToken");
+    const access = window.localStorage.getItem('accessToken');
+    const refresh = window.localStorage.getItem('refreshToken');
 
     console.log(!access);
 
@@ -22,8 +22,8 @@ export default function Home() {
 
   const logout = () => {
     setLoggedUser(false);
-    window.localStorage.removeItem("accessToken");
-    window.localStorage.removeItem("refreshToken");
+    window.localStorage.removeItem('accessToken');
+    window.localStorage.removeItem('refreshToken');
   };
 
   // const t = useTranslations("Showcase");
@@ -33,8 +33,8 @@ export default function Home() {
       className="relative inset-0 w-full object-cover"
       style={{
         backgroundImage: "url('./background.jpg')",
-        height: "auto",
-        backgroundRepeat: "no-repeat",
+        height: 'auto',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <Container className="text-center pt-80 pb-[500px]">
@@ -58,10 +58,7 @@ export default function Home() {
                   </Link>
                 </button>
                 <button className=" border-green-500 px-5 py-3 bg-green-500 hover:bg-green-700 rounded-md transition-all">
-                  <Link
-                    href="/register"
-                    className="text-xl font-bold text-white"
-                  >
+                  <Link href="/register" className="text-xl font-bold text-white">
                     Register
                   </Link>
                 </button>
