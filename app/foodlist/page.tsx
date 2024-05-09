@@ -123,6 +123,7 @@ export default function CustomPaginationActionsTable() {
   const [foodIndex, setFoodIndex] = useState(0);
   const [isDelete, setIsDelete] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [user, setUser] = useState("");
 
   const handleClose = () => {
     setOpen(false);
@@ -152,6 +153,18 @@ export default function CustomPaginationActionsTable() {
   };
 
   useEffect(() => {
+    const access = window.localStorage.getItem("accessToken") || "";
+    const refresh = window.localStorage.getItem("refreshToken") || "";
+
+    if (access === "" || refresh === "") {
+      window.localStorage.removeItem("accessToken");
+      window.localStorage.removeItem("refreshToken");
+      window.location.href = "/";
+    }
+
+    const decodedAccess: any = jwt.decode(access);
+    setUser(decodedAccess.id);
+
     axios.get("/api/foods/getfoodlist").then((data) => {
       const info = data.data;
       console.log(info);
@@ -246,7 +259,7 @@ export default function CustomPaginationActionsTable() {
         <p className=" text-8xl mb-20">Food List</p>
         <TableContainer
           component={Paper}
-          sx={{ maxHeight: "50vh", overflowY: "scroll" }}
+          sx={{ maxHeight: "50vh", overflowY: "auto" }}
         >
           <Table
             stickyHeader
@@ -277,6 +290,7 @@ export default function CustomPaginationActionsTable() {
                   </TableCell>
                   <TableCell style={{ width: 160 }} align="center">
                     <IconButton
+                      disabled={row.creator.id === user ? false : true}
                       aria-label="delete"
                       color="primary"
                       onClick={() => editFood(row._id, index)}
@@ -286,6 +300,7 @@ export default function CustomPaginationActionsTable() {
                     </IconButton>
                     &nbsp;&nbsp;
                     <IconButton
+                      disabled={row.creator.id === user ? false : true}
                       aria-label="delete"
                       color="error"
                       onClick={() => {
