@@ -2,7 +2,6 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectToDataBase from '@/libs/db';
-import User from '@/models/userSchema';
 import Food from '@/models/foodSchema';
 
 connectToDataBase();
@@ -17,7 +16,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
   switch (req.method) {
     case 'GET':
       Food.find({})
-        .populate('creator')
+        // .populate('creator')
         .then((foods) => {
           res.json({ message: 'Get Foods.', success: true, data: foods });
         });

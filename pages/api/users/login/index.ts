@@ -6,6 +6,8 @@ import User from '@/models/userSchema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import { isValidEmail } from '@/libs/email-validation';
+
 connectToDataBase();
 
 type ResponseData = {
@@ -23,8 +25,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
         res.json({ message: 'Email Field is Required.', success: false, data: {} });
       }
 
+      if(!isValidEmail(info.id)) {
+        res.json({ message: 'Invalid Email.', success: false, data: {} });
+      }
+
       if (info.password === '') {
         res.json({ message: 'Password Field is Required.', success: false, data: {} });
+      }
+
+      if (info.password.length < 6 || info.password.length > 30) {
+        res.json({ message: 'Password Must Contain Between 6 ~ 30 Characters.', success: false, data: {} });
       }
 
       User.findOne({ id: info.id }).then((result) => {
@@ -40,11 +50,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
               const accessToken = jwt.sign(
                 { id: info.id, name: result.name, password: info.password },
                 `${process.env.ACCESS_KEY}`,
-                { expiresIn: 3600 },
+                { expiresIn: '60s' },
               );
-              const refreshToken = jwt.sign({ accessToken: accessToken }, `${process.env.REFRESH_KEY}`, {
-                expiresIn: 3600 * 10,
-              });
+              const refreshToken = jwt.sign(
+                { id: info.id, name: result.name, password: info.password },
+                `${process.env.REFRESH_KEY}`,
+                { expiresIn: '1d' },
+              );
               let data = {
                 data: result,
                 accessToken: accessToken,

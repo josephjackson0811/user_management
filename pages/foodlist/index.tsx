@@ -123,6 +123,58 @@ export default function CustomPaginationActionsTable() {
     const access = window.localStorage.getItem('accessToken') || '';
     const refresh = window.localStorage.getItem('refreshToken') || '';
 
+    // axios.interceptors.request.use(
+    //   (config) => {
+    //     config.headers['access'] = `${window.localStorage.getItem('accessToken')}`;
+    //     // config.headers['refresh'] = `${refresh}`;
+
+    //     return config;
+    //   },
+    //   (error) => {
+    //     return Promise.reject(error);
+    //   },
+    // );
+
+    // axios.interceptors.response.use(
+    //   (data) => {
+    //     if (data.data.type === 'token') {
+    //       if (data.data.message === 'Access Token Expired.') {
+    //         window.localStorage.removeItem('accessToken');
+    //         window.localStorage.removeItem('refreshToken');
+    //         window.location.href = '/';
+    //         const prevRequest = data?.config;
+    //         axios
+    //           .get('/api/users/refresh', {
+    //             headers: { refresh: refresh },
+    //           })
+    //           .then((res) => {
+    //             const info = res.data;
+    //             console.log('info', info);
+
+    //             if (info.success) {
+    //               window.localStorage.setItem('accessToken', info.data.accessToken);
+    //               console.log(prevRequest.url);
+
+    //               axios(prevRequest).then((data) => {
+    //                 console.log('datadtatad', data);
+    //               });
+    //             }
+    //           });
+    //       } else {
+    //         window.localStorage.removeItem('accessToken');
+    //         window.localStorage.removeItem('refreshToken');
+    //         window.location.href = '/';
+    //       }
+    //     } else {
+    //       return data;
+    //     }
+    //     return data;
+    //   },
+    //   (error) => {
+    //     return Promise.reject(error);
+    //   },
+    // );
+
     if (access === '' || refresh === '') {
       window.localStorage.removeItem('accessToken');
       window.localStorage.removeItem('refreshToken');
@@ -142,44 +194,40 @@ export default function CustomPaginationActionsTable() {
 
   const createFood = () => {
     const access = window.localStorage.getItem('accessToken') || '';
-    const refresh = window.localStorage.getItem('refreshToken') || '';
 
-    const decoded: any = jwt.decode(refresh);
+    const decodedAccess: any = jwt.decode(access);
 
-    if (decoded.accessToken === access) {
-      const decodedAccess: any = jwt.decode(access);
+    const foodData = {
+      food: food,
+      creator: decodedAccess.id,
+    };
+    if (isCreate) {
+      axios.post('/api/foods/create', foodData).then((data) => {
+        const info = data.data;
 
-      const foodData = {
-        food: food,
-        creator: decodedAccess.id,
-      };
-      if (isCreate) {
-        axios.post('/api/foods/create', foodData).then((data) => {
-          const info = data.data;
+        if (info.success) {
+          setRows(info.data.reverse());
+          setOpen(false);
+          setFood('');
+          setIsCreate(false);
+        } else {
+          alert(info.message);
+        }
+      });
+    } else {
+      axios.put(`/api/foods/update/${foodId}`, foodData).then((data) => {
+        const info = data.data;
 
-          if (info.success) {
-            setRows(info.data.reverse());
-            setOpen(false);
-            setFood('');
-            setIsCreate(false);
-          } else {
-            alert(info.message);
-          }
-        });
-      } else {
-        axios.put(`/api/foods/update/${foodId}`, foodData).then((data) => {
-          const info = data.data;
-
-          if (info.success) {
-            rows[foodIndex].food = info.data;
-            setFoodIndex(0);
-            setFoodId('');
-            setOpen(false);
-            setIsEdit(false);
-          }
-        });
-      }
+        if (info.success) {
+          rows[foodIndex].food = info.data;
+          setFoodIndex(0);
+          setFoodId('');
+          setOpen(false);
+          setIsEdit(false);
+        }
+      });
     }
+    // }
   };
 
   const editFood = (id: any, index: any) => {

@@ -1,7 +1,6 @@
 'use client';
 
 import { Box, Container } from '@mui/material';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { useEffect, useState } from 'react';

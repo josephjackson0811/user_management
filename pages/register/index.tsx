@@ -6,6 +6,8 @@ import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
+import { isValidEmail } from '@/libs/email-validation';
+
 const Register = () => {
   const [name, setName] = useState('');
   const [id, setId] = useState('');
@@ -14,10 +16,12 @@ const Register = () => {
 
   const userRegister = () => {
     if (password.length < 6 || password.length > 30) {
-      alert('Password must contain between 6 ~ 30 charachters');
+      alert('Password Must Contain Between 6 ~ 30 Characters.');
+    } else if (!isValidEmail(id)) {
+      alert('Invalid Email.');
     } else {
       if (password !== passwordConfirm) {
-        alert('Password Incoreect');
+        alert('Password Incorrect');
       } else {
         const userData = {
           id: id.toString(),
