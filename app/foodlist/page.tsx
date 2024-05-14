@@ -175,14 +175,14 @@ export default function CustomPaginationActionsTable() {
     //   },
     // );
 
-    if (access === '' || refresh === '') {
-      window.localStorage.removeItem('accessToken');
-      window.localStorage.removeItem('refreshToken');
-      window.location.href = '/';
-    }
+    // if (access === '' || refresh === '') {
+    //   window.localStorage.removeItem('accessToken');
+    //   window.localStorage.removeItem('refreshToken');
+    //   window.location.href = '/';
+    // }
 
     const decodedAccess: any = jwt.decode(access);
-    setUser(decodedAccess.id);
+    setUser(decodedAccess?.id);
 
     axios.get('/api/foods/getfoodlist').then((data) => {
       const info = data.data;

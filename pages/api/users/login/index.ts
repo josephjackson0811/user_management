@@ -16,7 +16,7 @@ type ResponseData = {
   data: object;
 };
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   const info = req.body;
 
   switch (req.method) {

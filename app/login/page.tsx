@@ -5,7 +5,6 @@ import { Box, Container, TextField } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
 
 import { isValidEmail } from '@/libs/email-validation';
 
@@ -13,8 +12,6 @@ const Login = () => {
   //State
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
-
-  const { data: session } = useSession();
 
   const userLogin = () => {
     if (password.length < 6 || password.length > 30) {
@@ -67,7 +64,8 @@ const Login = () => {
             className="border-blue-500 px-5 py-3 bg-blue-500 rounded-md hover:bg-blue-700 transition-all text-bold text-white text-xl mb-10"
             // onClick={() => userLogin()}
           >
-            <Link href="/api/auth/signin">LOGIN</Link>
+            <Link href="/api/auth/login">LOGIN</Link>
+            {/* LOGIN */}
           </button>
           <p>
             Do you have your account? If not,&nbsp;
