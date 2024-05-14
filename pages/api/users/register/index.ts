@@ -25,7 +25,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
         res.json({ message: 'Email Field is Required.', success: false, data: {} });
       }
 
-      if(!isValidEmail(info.id)) {
+      if (!isValidEmail(info.id)) {
         res.json({ message: 'Invalid Email.', success: false, data: {} });
       }
 

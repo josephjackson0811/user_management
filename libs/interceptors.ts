@@ -1,11 +1,14 @@
-import axios from 'axios'
+import axios from 'axios';
 
-const accessToken = window.localStorage.getItem('accessToken')
+const accessToken = window.localStorage.getItem('accessToken');
 
-axios.interceptors.request.use((config) => {
-    config.headers['Authorization'] = `Bearer ${accessToken}`
+axios.interceptors.request.use(
+  (config) => {
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
 
     return config;
-}, (error) => {
-    return Promise.reject(error)
-} )
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);

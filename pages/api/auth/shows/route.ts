@@ -5,13 +5,13 @@ export const GET = withApiAuthRequired(async function shows(req) {
   try {
     const res = new NextResponse();
     const { accessToken } = await getAccessToken(req, res, {
-      scopes: ['read:shows']
+      scopes: ['read:shows'],
     });
     const apiPort = process.env.API_PORT || 3001;
     const response = await fetch(`http://localhost:${apiPort}/api/shows`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     const shows = await response.json();
 
